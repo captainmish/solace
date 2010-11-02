@@ -7,7 +7,9 @@
 {% macro provider(title, icon, pattern, mode='username') -%}
   <div class={{ mode }}>
     <span class=icon><img src="{{ url_for('static', file='images/' ~ icon) }}" alt="{{ title }}" title="{{ title }}"></span>
+    {% autoescape false %}
     <span class=pattern>{{ pattern.replace('{', '<strong>').replace('}', '</strong>') }}</span>
+    {% endautoescape %}
   </div>
 {%- endmacro %}
 {% block body %}
