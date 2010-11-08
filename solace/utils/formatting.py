@@ -35,7 +35,7 @@ def format_creole(text, inline=False):
     kwargs = {}
     if inline:
         kwargs['context'] = 'inline'
-    return Markup(_parser.render(text, encoding=None, **kwargs))
+    return _parser.render(text, encoding=None, **kwargs)
 
 
 def format_creole_diff(old, new):
