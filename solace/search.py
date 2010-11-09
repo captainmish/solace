@@ -84,7 +84,7 @@ class WhooshEngine(object):
         self.remove_post(post=post, commit=commit)
         self.add_post(post=post, commit=commit)
 
-    def query(self, query, only_questions=False, only_answered=False):
+    def query(self, query, page=1, only_questions=False, only_answered=False):
         searcher = self.ix.searcher()
         stem_ana = StemmingAnalyzer()
         query = ' '.join([token.text for token in stem_ana(query)])
@@ -92,7 +92,7 @@ class WhooshEngine(object):
         if only_questions:
             qq = QueryParser('dtype').parse(u'question')
             q = And([q,qq])
-        res = searcher.search(q)
+        res = searcher.search_page(q, int(page), sortedby='hotness')
         #facets = Facets.from_field(searcher, "topicid")
         #cats = facets.categorize(res)
         return res

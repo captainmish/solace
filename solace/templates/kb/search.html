@@ -15,7 +15,19 @@
   {% for r in res %}
     <strong><a href="{{ url_for('kb.topic', id=r.topicid) }}">{{ r.title }}</a></strong>
     <p>{{ r.content |striptags|truncate(length=200) }}</p>
-  {% endfor %}
-  {{ pagination }}
+  {% endfor %} 
+  {% if pagecount >1 %}
+  <div class="paginator">
+    <ul>
+    {% for p in range(pagecount) %}
+	{% if page == p+1 %}
+	  <li>{{ p+1 }}</li>
+	{% else %}
+	  <li><a href="{{ url_for("search", search=query, page=p+1) }}">{{ p+1 }}</a></li>
+	{% endif %}
+    {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
 {% endblock %}
 
