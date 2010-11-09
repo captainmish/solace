@@ -55,7 +55,7 @@ class WhooshEngine(object):
             pass
         else:
             for p in Post.query.all():
-                self._add_post(p, writer)
+                self.add_post(p, writer)
             writer.commit()
 
     def remove_post(self, post, writer=None, commit=False):

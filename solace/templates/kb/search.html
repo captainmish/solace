@@ -14,7 +14,7 @@
   </div>
   {% for r in res %}
     <strong><a href="{{ url_for('kb.topic', id=r.topicid) }}">{{ r.title }}</a></strong>
-    <p>...{{ r.content }}...</p>
+    <p>{{ r.content |striptags|truncate(length=200) }}</p>
   {% endfor %}
   {{ pagination }}
 {% endblock %}
