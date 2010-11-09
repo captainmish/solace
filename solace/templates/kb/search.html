@@ -1,0 +1,21 @@
+{% extends 'layout.html' %}
+{% set page_title = _('Search') %}
+{% block html_head %}
+{{- super() }}
+<link rel="alternate" href="{{ url_for('kb.overview_feed', order_by=order_by)
+  }}" type="application/atom+xml">
+{%- endblock %}
+{% block body %}
+  <h1>{{ page_title }}</h1>
+  <div class="explanation">
+    <p>{% trans -%}
+    Search results for <em>{{ query }}</em>
+    {%- endtrans %}
+  </div>
+  {% for r in res %}
+    <strong><a href="{{ url_for('kb.topic', id=r.topicid) }}">{{ r.title }}</a></strong>
+    <p>...{{ r.content }}...</p>
+  {% endfor %}
+  {{ pagination }}
+{% endblock %}
+

@@ -11,6 +11,9 @@ from whoosh.query import And
 from whoosh.searching import Facets
 
 
+def get_engine():
+    return WhooshEngine()
+
 class WhooshEngine(object):
     def __init__(self):
         try:
@@ -52,17 +55,19 @@ class WhooshEngine(object):
             pass
         else:
             for p in Post.query.all():
-                print p.topic.id, p.id
                 self._add_post(p, writer)
             writer.commit()
 
-    def remove_post(self, post, commit=False):
-        writer = self.ix.writer()
+    def remove_post(self, post, writer=None, commit=False):
+        if writer is None:
+            writer = self.ix.writer()
         writer.delete_by_term('postid', unicode(post.id))
         if commit:
             writer.commit()
 
-    def add_post(self, post, writer, commit=False):
+    def add_post(self, post, writer=None, commit=False):
+        if writer is None:
+            writer = self.ix.writer()
         writer.add_document(
             topicid = unicode(post.topic.id),
             title = unicode(post.topic.title),
@@ -74,11 +79,10 @@ class WhooshEngine(object):
         if commit:
             writer.commit()
 
-    def update_post(self, post, writer=None, commit=True):
-        if writer is None:
-            writer = self.ix.writer()
-        self.remove_post(post, commit)
-        self.add_post(post, writer, commit)
+    def update_post(self, post, commit=True):
+        print 'readding %s' % post
+        self.remove_post(post=post, commit=commit)
+        self.add_post(post=post, commit=commit)
 
     def query(self, query, only_questions=False, only_answered=False):
         searcher = self.ix.searcher()
@@ -93,11 +97,15 @@ class WhooshEngine(object):
         #cats = facets.categorize(res)
         return res
 
-def get_tids(res):
-    return [r.get("topicid") for r in res]
 
-def get_pid_tid(res):
-    d = []
-    for r in res:
-        d.append({"topic": r.get("topicid"), "post": r.get("postid")})
-    return d
+def handle_changes(changes):
+    engine = get_engine()
+    for model, action in changes:
+        if isinstance(model, Post):
+            engine.update_post(model)
+
+
+# database signal handlers
+from solace.models import Post, Topic, _Vote
+from solace.signals import after_models_committed
+after_models_committed.connect(handle_changes)

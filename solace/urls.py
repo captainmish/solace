@@ -107,4 +107,7 @@ url_map = Map([
 
     # Build only stuff
     Rule('/_static/<file>', build_only=True) > 'static',
+
+    # Search
+    Rule('/search/') > 'search.search',
 ])
