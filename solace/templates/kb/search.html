@@ -17,7 +17,7 @@
     <p>{{ r.content |striptags|truncate(length=200) }}</p>
   {% endfor %} 
   {% if pagecount >1 %}
-  <div class="paginator">
+  <div class="pagination">
     <ul>
     {% for p in range(pagecount) %}
 	{% if page == p+1 %}
