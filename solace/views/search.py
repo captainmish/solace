@@ -14,7 +14,7 @@ def search(request):
     out = []
     for r in res:
         r['content'] = format_creole(r['content'])
+        r['tags'] = [t for t in r['tags'].split(',')]
         out.append(r)
-        print r
     return render_template('kb/search.html', pagecount=res.pagecount, 
                             page=res.pagenum, res=out, query=query)

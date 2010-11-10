@@ -13,8 +13,17 @@
     {%- endtrans %}
   </div>
   {% for r in res %}
+    <div class="searchresult">
     <strong><a href="{{ url_for('kb.topic', id=r.topicid) }}">{{ r.title }}</a></strong>
+    <div class="resultsmeta">
+      <p>Last Updated: {{ r.date_updated.strftime("%d %B %Y, %H:%m") }}
+      {% for t in r.tags %}
+        <a class="tag" href="{{ url_for("kb.by_tag", name=t) }}">{{ t }}</a>
+      {% endfor %}
+    </div>
     <p>{{ r.content |striptags|truncate(length=200) }}</p>
+    <p class="searchlink">{{ request.base_url }}{{ url_for('kb.topic', id=r.topicid) }}</p>
+    </div>
   {% endfor %} 
   {% if pagecount >1 %}
   <div class="pagination">

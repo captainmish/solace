@@ -1,10 +1,12 @@
 
+from datetime import datetime, timedelta, date
+
 from solace import settings
 from solace.models import Topic, Post
 
 from whoosh.analysis import StemmingAnalyzer
 from whoosh.lang.porter2 import stem as stem2
-from whoosh.fields import TEXT, NUMERIC, ID, BOOLEAN, Schema
+from whoosh.fields import TEXT, NUMERIC, ID, BOOLEAN, Schema, KEYWORD, DATETIME
 from whoosh.index import create_in, open_dir, EmptyIndexError
 from whoosh.lang.porter import stem
 from whoosh.qparser import QueryParser, MultifieldParser
@@ -28,9 +30,12 @@ class WhooshEngine(object):
                     title=TEXT(stored=True, analyzer = self.stem_ana),
                     content=TEXT(stored=True, analyzer = self.stem_ana),
                     postid = ID(unique=True, stored=True),
+                    tags = KEYWORD(stored=True),
                     votes=NUMERIC,
                     dtype=ID(stored=True),
                     hotness=NUMERIC,
+                    date_updated=DATETIME(stored=True),
+                    date_indexed=DATETIME(stored=True),
                     )
         return schema
 
@@ -74,9 +79,13 @@ class WhooshEngine(object):
             title = unicode(post.topic.title),
             content = unicode(post.text),
             postid = unicode(post.id),
+            tags = ','.join([t.name for t in post.topic.tags]) or None,
             votes = post.votes,
             dtype = self._get_ptype(post),
-            hotness = post.topic.hotness)
+            hotness = post.topic.hotness,
+            date_updated = post.updated,
+            date_indexed = datetime.utcnow()
+            )
         if commit:
             writer.commit()
 
