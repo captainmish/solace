@@ -3,6 +3,7 @@ from solace import settings
 from solace.models import Topic, Post
 
 from whoosh.analysis import StemmingAnalyzer
+from whoosh.lang.porter2 import stem as stem2
 from whoosh.fields import TEXT, NUMERIC, ID, BOOLEAN, Schema
 from whoosh.index import create_in, open_dir, EmptyIndexError
 from whoosh.lang.porter import stem
@@ -16,16 +17,16 @@ def get_engine():
 
 class WhooshEngine(object):
     def __init__(self):
+        self.stem_ana = StemmingAnalyzer(stemfn=stem2)
         try:
             self.ix = self.get_index()
         except EmptyIndexError:
             self.ix = self.create_index()
 
     def get_schema(self):
-        stem_ana = StemmingAnalyzer()
         schema = Schema(topicid=ID(stored=True),
-                    title=TEXT(stored=True, analyzer = stem_ana),
-                    content=TEXT(stored=True, analyzer = stem_ana),
+                    title=TEXT(stored=True, analyzer = self.stem_ana),
+                    content=TEXT(stored=True, analyzer = self.stem_ana),
                     postid = ID(unique=True, stored=True),
                     votes=NUMERIC,
                     dtype=ID(stored=True),
@@ -86,8 +87,7 @@ class WhooshEngine(object):
 
     def query(self, query, page=1, only_questions=False, only_answered=False):
         searcher = self.ix.searcher()
-        stem_ana = StemmingAnalyzer()
-        query = ' '.join([token.text for token in stem_ana(query)])
+        query = ' '.join([token.text for token in self.stem_ana(query)])
         q = MultifieldParser(['title','content']).parse(query)
         if only_questions:
             qq = QueryParser('dtype').parse(u'question')
