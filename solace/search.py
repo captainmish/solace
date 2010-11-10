@@ -85,7 +85,7 @@ class WhooshEngine(object):
         self.remove_post(post=post, commit=commit)
         self.add_post(post=post, commit=commit)
 
-    def query(self, query, page=1, only_questions=False, only_answered=False):
+    def query(self, query, page=1, only_questions=True, only_answered=False):
         searcher = self.ix.searcher()
         query = ' '.join([token.text for token in self.stem_ana(query)])
         q = MultifieldParser(['title','content']).parse(query)
