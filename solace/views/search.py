@@ -14,7 +14,10 @@ def search(request):
     out = []
     for r in res:
         r['content'] = format_creole(r['content'])
-        r['tags'] = [t for t in r['tags'].split(',')]
+        try:
+            r['tags'] = [t for t in r['tags'].split(',')]
+        except KeyError:
+            r['tags'] = []
         out.append(r)
     return render_template('kb/search.html', pagecount=res.pagecount, 
                             page=res.pagenum, numresults=res.total, res=out, query=query)
