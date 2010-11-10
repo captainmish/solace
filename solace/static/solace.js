@@ -152,8 +152,7 @@ var Solace = {
   attachFlashTimeouts : function(items, container) {
     items.each(function() {
       var self = $(this), timeout = 0;
-      if (self.attr('class') == 'info_message')
-        window.setTimeout(function() {
+      function remover() {
           self.animate({
             height:   'hide'
           }, 'fast', 'linear', function() {
@@ -161,7 +160,11 @@ var Solace = {
             if ($('p', container).length == 0)
               container.remove();
           });
-        }, 6000);
+      }
+      if (self.attr('class') == 'info_message') {
+            window.setTimeout(remover, 6000);
+      }
+      container.bind('click', remover);
     });
   },
 
@@ -176,11 +179,6 @@ var Solace = {
     }
     if (!Solace._flash_container_enhanced) {
       Solace._flash_container_enhanced = true;
-      container.hide().bind('mouseenter', function() {
-        container.stop().animate({opacity: 0.3}, 'fast');
-      }).bind('mouseleave', function() {
-        container.stop().animate({opacity: 1.0}, 'fast');
-      });
       Solace.attachFlashTimeouts($('p', container), container);
     }
     return container;
