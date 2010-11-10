@@ -9,7 +9,7 @@
   <h1>{{ page_title }}</h1>
   <div class="explanation">
     <p>{% trans -%}
-    Search results for <em>{{ query }}</em>
+    Search results for <em>{{ query }}</em> : {{ numresults }} results
     {%- endtrans %}
   </div>
   {% for r in res %}

@@ -17,4 +17,4 @@ def search(request):
         r['tags'] = [t for t in r['tags'].split(',')]
         out.append(r)
     return render_template('kb/search.html', pagecount=res.pagecount, 
-                            page=res.pagenum, res=out, query=query)
+                            page=res.pagenum, numresults=res.total, res=out, query=query)
